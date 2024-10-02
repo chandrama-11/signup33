@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+</head>
+<body>
+    <form id="formdata">
+        <input type="text" id="UserName" placeholder="Full Name" required>
+        <input type="text" id="Number" placeholder="Mobile Number" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+        <button type="submit" id="btn">Sign Up</button>
+    </form>
+    <p id="Signup-result"></p>
+
+    <script>
+        const URL = "https://script.google.com/macros/s/AKfycbyYQIzxbGVyCQVlUqC_O4xiDrYjejOGUL4GSxDpJFHx0_BluCKindZTU-cOqbLNowA/exec";
+        const FORM = document.getElementById("formdata");
+        const BTN = document.getElementById("btn");
+        const PARAGRAPH = document.getElementById("Signup-result");
+
+        FORM.addEventListener("submit", (e) => {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const mobile = document.getElementById("Number").value;
+            const UserName = document.getElementById("UserName").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+
+            // Regular expressions for validation
+            const nameRegex = /^[a-zA-Z\s]+$/; // Only alphabets and spaces
+            const mobileRegex = /^[0-9]{10}$/; // Exactly 10 digits
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Valid email format
+            const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/; // Strong password
+
+            // Validate Full Name
+            if (!nameRegex.test(UserName)) {
+                alert("User Name can only contain alphabets.");
+                return;
+            }
+
+            // Validate Mobile Number
+            if (!mobileRegex.test(mobile)) {
+                alert("Mobile number must be a valid 10-digit number.");
+                return;
+            }
+
+            // Validate Email
+            if (!emailRegex.test(email)) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            // Validate Password (Minimum 8 characters, at least one uppercase, one lowercase, and one number)
+            if (!passwordRegex.test(password)) {
+                alert("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number.");
+                return;
+            }
+
+            // Validate Confirm Password
+            if (password !== confirmPassword) {
+                alert("Password and Confirm Password are different.");
+                return;
+            }
+
+            // Send form data to Google Sheet if all validations pass
+            let formData = new FormData(FORM); // Correct FormData usage
+
+            BTN.innerHTML = "Sign Up..."; // Update button text to indicate processing
+
+            fetch(URL, {
+                method: "POST",
+                body: formData // Send the FormData object
+            })
+                .then((response) => response.text())
+                .then((finalRes) => {
+                    BTN.innerHTML = "Sign Up"; // Reset button text
+                    PARAGRAPH.innerHTML = `Welcome ${UserName}, Sign Up Successful!`;
+
+                    setTimeout(() => {
+                        PARAGRAPH.innerHTML = ``;
+                        window.location.href = "https://chatgpt.com/"; // Redirect after 5 seconds
+                    }, 5000);
+
+                    FORM.reset(); // Reset form fields
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    BTN.innerHTML = "Sign Up"; // Reset button text in case of error
+                });
+        });
+    </script>
+</body>
+</html>
